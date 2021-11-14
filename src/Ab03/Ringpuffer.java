@@ -1,33 +1,41 @@
 package Ab03;
 
+import jdk.dynalink.NamedOperation;
+
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Queue;
+import java.util.*;
 
 public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
-    private int writePos;
-    private int readPos;
+    private int writePos = 0;
+    private int readPos = 0;
     private int size;
     private int capacity;
     private boolean fixedCapacity;
     private boolean discarding;
     ArrayList<T> elements;
 
+    public Ringpuffer(int groesse, boolean ueberschreiben, boolean vergroessern) {
+        capacity = groesse;
+        fixedCapacity = vergroessern;
+        discarding = ueberschreiben;
+    }
+
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        if (size == 0) return true;
+        else return false;
     }
 
     @Override
     public boolean contains(Object o) {
-        return false;
+        if(elements.contains(o)) return true;
+        else return false;
+
     }
 
     @Override
@@ -37,7 +45,11 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
 
     @Override
     public Object[] toArray() {
-        return new Object[0];
+        Object[] array = new Object[elements.size()];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = elements.get(i);
+        }
+        return array;
     }
 
     @Override
@@ -52,12 +64,12 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
 
     @Override
     public boolean remove(Object o) {
-        return false;
+       return elements.remove(o);
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        return elements.containsAll(c);
     }
 
     @Override
@@ -81,17 +93,45 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
     }
 
     @Override
-    public boolean offer(T t) {
+    public boolean offer(T t) throws ClassCastException,NullPointerException,IllegalArgumentException {
+        /*
+        nserts the specified element into this queue if it is possible to do so immediately without violating capacity restrictions. When using a capacity-restricted queue, this method is generally preferable to add(E), which can fail to insert an element only by throwing an exception.
+
+    Parameters:
+    e - the element to add
+    Returns:
+    true if the element was added to this queue, else false
+    Throws:
+    ClassCastException - if the class of the specified element prevents it from being added to this queue
+    NullPointerException - if the specified element is null and this queue does not permit null elements
+    IllegalArgumentException - if some property of this element prevents it from being added to this queue
+         */
+
         return false;
     }
 
     @Override
-    public T remove() {
-        return null;
+    public T remove() throws NoSuchElementException {
+       /*
+      Retrieves and removes the head of this queue. This method differs from poll only in
+     that it throws an exception if this queue is empty.
+     Returns:
+     the head of this queue
+    Throws:
+    NoSuchElementException - if this queue is empty
+
+        */
+        return new <T>;
     }
 
     @Override
     public T poll() {
+        /*
+        E poll()
+        Retrieves and removes the head of this queue, or returns null if this queue is empty.
+        Returns:
+        the head of this queue, or null if this queue is empty
+         */
         return null;
     }
 
