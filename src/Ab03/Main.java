@@ -13,7 +13,7 @@ public class Main {
         System.out.println("Ringpuffer");
         System.out.print("Geben sie die Kapazität des Ringpuffers ein: ");
         capacity = scan.nextInt();
-        Ringpuffer ringpuffer = new Ringpuffer(capacity);
+        Ringpuffer<Integer> ringpuffer = new Ringpuffer(capacity);
 
 
     }

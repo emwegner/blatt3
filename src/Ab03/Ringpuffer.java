@@ -33,11 +33,11 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
     public boolean contains(Object o) {
         if(elements.contains(o)) return true;
         else return false;
-
     }
 
     @Override
     public Iterator<T> iterator() {
+
         return null;
     }
 
@@ -52,11 +52,12 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
 
     @Override
     public <T1> T1[] toArray(T1[] a) {
-        return null;
+      return null;
     }
 
     @Override
     public boolean add(T t) {
+        if(size == capacity) aenderung();
         elements.add(writePos,t);
         writePos++;
         return true;
@@ -64,27 +65,40 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
 
     @Override
     public boolean remove(Object o) {
-       return elements.remove(o);
+     /*   „Entfernte“ Elemente
+        sollen physisch in der
+        ArrayList<T> verbleiben.
+        Sie werden nur „logisch“
+        gelöscht, indem die
+        Lesen-Position
+        verschoben wird
+      */
+       readPos++;
+       size--;
+       return true;
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-      // prob wrong  return elements.containsAll(c);
-        return false;
+      return elements.containsAll(c);
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        for(int i=0; i<c.size(); i++) {
-            elements.add(writePos,c.get(i));
+        for(T current : c) {
+            if(size == capacity) aenderung();
+            elements.add(writePos,current);
             writePos++;
+            size++;
         }
-        return false;
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
+        for(int i =0;i < c.size(); i++) {
 
+        }
         return false;
     }
 
@@ -117,14 +131,15 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
     IllegalArgumentException - if some property of this element prevents it from being added to this queue
          */
 
-    if (size == capacity) {
-
-    }
+    return false;
     }
 
     @Override
     public T remove() throws NoSuchElementException {
+        if(size == 0) throw new NoSuchElementException();
+        else {
 
+        }
        /*
       Retrieves and removes the head of this queue. This method differs from poll only in
      that it throws an exception if this queue is empty.
@@ -152,11 +167,34 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
 
     @Override
     public T element() {
+        //?
         return null;
     }
 
     @Override
     public T peek() {
+        //?
         return null;
+    }
+
+    public void aenderung(){
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Die maximale Kapazität ist erreicht. " +
+        "Möchten sie die Kapazität erhöhen, Elemente überschreiben oder sollen keine Elemente mehr angenommen werden? (1/2/3)");
+        int eingabe = scan.nextInt();
+        switch(eingabe){
+            case 1:
+                System.out.print("Um wie viel wollen sie die Kapazität erhöhen?: ");
+                int increase = scan.nextInt();
+                capacity += increase;
+            case 2:
+                writePos = 0;
+                System.out.print("Elemente werden nun überschrieben");
+            case 3:
+                System.out.println("Es werden keine neuen Elemente angenommen");
+
+            default:
+                System.out.println("Ungültige Eingabe");
+        }
     }
 }
