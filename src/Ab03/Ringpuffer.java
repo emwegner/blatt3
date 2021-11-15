@@ -5,7 +5,7 @@ import jdk.dynalink.NamedOperation;
 import java.io.Serializable;
 import java.util.*;
 
-public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
+public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable,Iterable {
     private int writePos = 0;
     private int readPos = 0;
     private int size;
@@ -37,8 +37,21 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
 
     @Override
     public Iterator<T> iterator() {
+        return new Iterator<T>() {
 
-        return null;
+            private int pointer=0;
+
+            @Override
+            public boolean hasNext() {
+                return pointer < size;
+            }
+
+            @Override
+            public T next() {
+                return elements.get(pointer++);
+
+            }
+        };
     }
 
     @Override

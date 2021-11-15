@@ -15,6 +15,14 @@ public class Main {
         capacity = scan.nextInt();
         Ringpuffer<Integer> ringpuffer = new Ringpuffer(capacity);
 
+        /*
+        Iterator test
+        Iterator<Integer> it = new Ringpuffer().iterator();
+        while(it.hasNext()) {
+        System.out.println(it.next());
 
+        for(Integer i : new Ringpuffer()) {
+        System.out.println("--> " + i);
+         */
     }
 }
