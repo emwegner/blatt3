@@ -10,14 +10,12 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
     private int readPos = 0;
     private int size;
     private int capacity;
-    private boolean fixedCapacity;
-    private boolean discarding;
+    private boolean fixedCapacity =false;
+    private boolean discarding=false;
     ArrayList<T> elements;
 
-    public Ringpuffer(int groesse, boolean ueberschreiben, boolean vergroessern) {
+    public Ringpuffer(int groesse) {
         capacity = groesse;
-        fixedCapacity = vergroessern;
-        discarding = ueberschreiben;
     }
 
     @Override
@@ -59,7 +57,9 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
 
     @Override
     public boolean add(T t) {
-        return false;
+        elements.add(writePos,t);
+        writePos++;
+        return true;
     }
 
     @Override
@@ -69,21 +69,30 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return elements.containsAll(c);
+      // prob wrong  return elements.containsAll(c);
+        return false;
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
+        for(int i=0; i<c.size(); i++) {
+            elements.add(writePos,c.get(i));
+            writePos++;
+        }
         return false;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
+
         return false;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
+        for(int i=0; i < c.size(); i++) {
+
+        }
         return false;
     }
 
@@ -95,7 +104,8 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
     @Override
     public boolean offer(T t) throws ClassCastException,NullPointerException,IllegalArgumentException {
         /*
-        nserts the specified element into this queue if it is possible to do so immediately without violating capacity restrictions. When using a capacity-restricted queue, this method is generally preferable to add(E), which can fail to insert an element only by throwing an exception.
+    inserts the specified element into this queue if it is possible to do so immediately without violating capacity restrictions.
+    When using a capacity-restricted queue, this method is generally preferable to add(E), which can fail to insert an element only by throwing an exception.
 
     Parameters:
     e - the element to add
@@ -107,11 +117,14 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
     IllegalArgumentException - if some property of this element prevents it from being added to this queue
          */
 
-        return false;
+    if (size == capacity) {
+
+    }
     }
 
     @Override
     public T remove() throws NoSuchElementException {
+
        /*
       Retrieves and removes the head of this queue. This method differs from poll only in
      that it throws an exception if this queue is empty.
@@ -132,6 +145,8 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable {
         Returns:
         the head of this queue, or null if this queue is empty
          */
+
+
         return null;
     }
 
