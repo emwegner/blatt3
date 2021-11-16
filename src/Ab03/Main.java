@@ -12,16 +12,14 @@ public class Main {
         System.out.println("Ringpuffer");
         System.out.print("Geben sie die Kapazität des Ringpuffers ein: ");
         capacity = scan.nextInt();
-        Ringpuffer<Integer> ringpuffer = new Ringpuffer(capacity);
+        Ringpuffer<Integer> ringpuffer = new Ringpuffer(3);
 
         ringpuffer.add(1);
         ringpuffer.add(2);
         ringpuffer.add(3);
         ringpuffer.add(4);
 
-        Iterator<Integer> it = new Ringpuffer(10).iterator();
-        while (it.hasNext()) {
-            System.out.println(it.next());
+
         }
     }
-}
+
