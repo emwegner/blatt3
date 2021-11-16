@@ -5,13 +5,13 @@ import jdk.dynalink.NamedOperation;
 import java.io.Serializable;
 import java.util.*;
 
-public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable,Iterable {
+public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
     private int writePos = 0;
     private int readPos = 0;
     private int size;
     private int capacity;
-    private boolean fixedCapacity =false;
-    private boolean discarding=false;
+    private boolean fixedCapacity = true;
+    private boolean discarding = false;
     ArrayList<T> elements;
 
     public Ringpuffer(int groesse) {
@@ -31,7 +31,7 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable,Iterable 
 
     @Override
     public boolean contains(Object o) {
-        if(elements.contains(o)) return true;
+        if (elements.contains(o)) return true;
         else return false;
     }
 
@@ -39,7 +39,7 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable,Iterable 
     public Iterator<T> iterator() {
         return new Iterator<T>() {
 
-            private int pointer=0;
+            private int pointer = 0;
 
             @Override
             public boolean hasNext() {
@@ -49,7 +49,6 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable,Iterable 
             @Override
             public T next() {
                 return elements.get(pointer++);
-
             }
         };
     }
@@ -65,13 +64,14 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable,Iterable 
 
     @Override
     public <T1> T1[] toArray(T1[] a) {
-      return null;
+        //kein plan lmao
+        return a;
     }
 
     @Override
     public boolean add(T t) {
-        if(size == capacity) aenderung();
-        elements.add(writePos,t);
+        if (size == capacity) aenderung();
+        elements.add(writePos, t);
         writePos++;
         return true;
     }
@@ -86,21 +86,21 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable,Iterable 
         Lesen-Position
         verschoben wird
       */
-       readPos++;
-       size--;
-       return true;
+        readPos++;
+        size--;
+        return true;
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-      return elements.containsAll(c);
+        return elements.containsAll(c);
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        for(T current : c) {
-            if(size == capacity) aenderung();
-            elements.add(writePos,current);
+        for (T current : c) {
+            if (size == capacity) aenderung();
+            elements.add(writePos, current);
             writePos++;
             size++;
         }
@@ -109,27 +109,27 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable,Iterable 
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        for(int i =0;i < c.size(); i++) {
-
-        }
-        return false;
+       return elements.removeAll(c);
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        for(int i=0; i < c.size(); i++) {
-
-        }
-        return false;
+        return elements.retainAll(c);
     }
 
     @Override
     public void clear() {
-
+        elements.clear();
+        capacity=0;
+        size=0;
+        writePos=0;
+        readPos=0;
+        discarding = false;
+        fixedCapacity = true;
     }
 
     @Override
-    public boolean offer(T t) throws ClassCastException,NullPointerException,IllegalArgumentException {
+    public boolean offer(T t) throws ClassCastException, NullPointerException, IllegalArgumentException {
         /*
     inserts the specified element into this queue if it is possible to do so immediately without violating capacity restrictions.
     When using a capacity-restricted queue, this method is generally preferable to add(E), which can fail to insert an element only by throwing an exception.
@@ -143,26 +143,31 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable,Iterable 
     NullPointerException - if the specified element is null and this queue does not permit null elements
     IllegalArgumentException - if some property of this element prevents it from being added to this queue
          */
+        if (size == capacity) aenderung();
+        if (size < capacity) {
+                elements.add(writePos, t);
+                return true;
 
-    return false;
+        }
+        return false;
     }
 
     @Override
     public T remove() throws NoSuchElementException {
-        if(size == 0) throw new NoSuchElementException();
+        if (size == 0) throw new NoSuchElementException();
         else {
-
+            readPos++;
+            size--;
+            return elements.get(0);
         }
        /*
-      Retrieves and removes the head of this queue. This method differs from poll only in
-     that it throws an exception if this queue is empty.
-     Returns:
-     the head of this queue
+    Retrieves and removes the head of this queue. This method differs from poll only in
+    that it throws an exception if this queue is empty.
+    Returns:
+    the head of this queue
     Throws:
     NoSuchElementException - if this queue is empty
-
         */
-        return new <T>;
     }
 
     @Override
@@ -173,35 +178,60 @@ public class Ringpuffer<T> implements Queue<T>, Serializable,Cloneable,Iterable 
         Returns:
         the head of this queue, or null if this queue is empty
          */
-
-
-        return null;
+        if (size == 0) return null;
+        else {
+            readPos++;
+            size--;
+            return elements.get(0);
+        }
     }
 
     @Override
-    public T element() {
-        //?
-        return null;
+    public T element() throws NoSuchElementException {
+        if (size == 0) throw new NoSuchElementException();
+        else {
+            readPos++;  //ließt ja trotzdem aus
+            return elements.get(0);
+        }
+
+        /*
+        Retrieves, but does not remove, the head of this queue. This method differs from peek only in that it throws an exception if this queue is empty.
+        Returns:
+        the head of this queue
+        Throws:
+        NoSuchElementException - if this queue is empty
+         */
     }
 
     @Override
     public T peek() {
-        //?
-        return null;
+        if (size == 0) return null;
+        else {
+            readPos++; //ließt ja trotzdem aus
+            return elements.get(0);
+        }
+
+        /*
+        Retrieves, but does not remove, the head of this queue, or returns null if this queue is empty.
+        Returns:
+        the head of this queue, or null if this queue is empty
+         */
     }
 
-    public void aenderung(){
+    public void aenderung() {
         Scanner scan = new Scanner(System.in);
         System.out.println("Die maximale Kapazität ist erreicht. " +
-        "Möchten sie die Kapazität erhöhen, Elemente überschreiben oder sollen keine Elemente mehr angenommen werden? (1/2/3)");
+                "Möchten sie die Kapazität erhöhen, Elemente überschreiben oder sollen keine Elemente mehr angenommen werden? (1/2/3)");
         int eingabe = scan.nextInt();
-        switch(eingabe){
+        switch (eingabe) {
             case 1:
                 System.out.print("Um wie viel wollen sie die Kapazität erhöhen?: ");
+                fixedCapacity = false;
                 int increase = scan.nextInt();
                 capacity += increase;
             case 2:
                 writePos = 0;
+                discarding = true;
                 System.out.print("Elemente werden nun überschrieben");
             case 3:
                 System.out.println("Es werden keine neuen Elemente angenommen");
