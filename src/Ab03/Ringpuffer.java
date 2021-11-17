@@ -293,7 +293,7 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
     }
 
     private int position(int pos) {
-        return (pos+1) % capacity;
+     return (pos+1) % capacity;
     }
 
 }

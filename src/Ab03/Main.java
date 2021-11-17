@@ -19,6 +19,7 @@ public class Main {
         ArrayList<Integer> list = new ArrayList<Integer>();
         list.add(1);
         list.add(2);
+
         System.out.println("Add test");
         ringpuffer.add(1);
         ringpuffer.add(2);
