@@ -54,11 +54,13 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
 
             @Override
             public T next() {
-                try {
-                    return elements.get(pointer++);
-                } catch (IndexOutOfBoundsException e) {
-                    return elements.get(pointer);
+                if (readPos < size) {
+                    T temp = elements.get(readPos);
+                    readPos = incrementPos(readPos);
+                    pointer++;
+                    return temp;
                 }
+                return null;
             }
         };
     }
@@ -84,13 +86,14 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == capacity && discarding == false) aenderung();
         if (size < capacity && discarding == false) {
             elements.add(writePos, t);
-            writePos++;
+            writePos=incrementPos(writePos);
             size++;
             return true;
-        } else if (elements.size() > writePos) {
+        }
+        else if (discarding) {
             elements.set(writePos, t);
             size++;
-            writePos++;
+            writePos=incrementPos(writePos);
             return true;
         }
 
@@ -98,18 +101,14 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
     }
 
     @Override
-    public boolean remove(Object o) {
-     /*   „Entfernte“ Elemente
-        sollen physisch in der
-        ArrayList<T> verbleiben.
-        Sie werden nur „logisch“
-        gelöscht, indem die
-        Lesen-Position
-        verschoben wird
-      */
-        readPos++;
-        size--;
-        return true;
+    public boolean remove(Object o) throws NoSuchElementException {
+        if (size == 0) throw new NoSuchElementException();
+        else {
+            T temp = elements.get(readPos);
+            readPos = incrementPos(readPos);
+            size--;
+            return true;
+        }
     }
 
     @Override
@@ -128,13 +127,21 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
     public boolean addAll(Collection<? extends T> c) {
         for (T current : c) {
             if (size == capacity && discarding == false) aenderung();
-            if (size < capacity || discarding) {
+            if (size < capacity && discarding == false) {
                 elements.add(writePos, current);
-                writePos++;
+                writePos=incrementPos(writePos);
                 size++;
+                return true;
             }
-        }
-        return true;
+            else if (elements.size() > writePos) {
+                elements.set(writePos, current);
+                size++;
+                writePos=incrementPos(writePos);
+                return true;
+            }
+
+            }
+        return false;
     }
 
     @Override
@@ -189,13 +196,13 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == capacity && discarding == false) aenderung();
         if (size < capacity && discarding == false) {
             elements.add(writePos, t);
-            writePos++;
+            writePos=incrementPos(writePos);
             size++;
             return true;
         } else if (elements.size() > writePos) {
             elements.set(writePos, t);
             size++;
-            writePos++;
+            writePos=incrementPos(writePos);
             return true;
         }
 
@@ -207,7 +214,7 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == 0) throw new NoSuchElementException();
         else {
             T temp = elements.get(readPos);
-            readPos++;
+            readPos = incrementPos(readPos);
             size--;
             return temp;
         }
@@ -232,7 +239,7 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == 0) return null;
         else {
             T head = elements.get(readPos);
-            readPos++;
+            readPos = incrementPos(readPos);
             size--;
             return head;
         }
@@ -243,7 +250,7 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == 0) throw new NoSuchElementException();
         else {
             T head = elements.get(readPos);
-            readPos++; //wird ja trotzdem ausgelesen
+            readPos = incrementPos(readPos); //wird ja trotzdem ausgelesen
             size--;
             return head;
         }
@@ -261,7 +268,7 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == 0) return null;
         else {
             T head = elements.get(readPos);
-            readPos++; //wird ja trotzdem ausgelesen
+            readPos = incrementPos(readPos); //wird ja trotzdem ausgelesen
             size--;
             return head;
         }
@@ -297,6 +304,10 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
                 System.out.println("Ungültige Eingabe");
                 break;
         }
+    }
+
+    private int incrementPos(int pos) {
+        return (pos+1) % this.capacity;
     }
 
 }

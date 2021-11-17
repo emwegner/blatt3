@@ -2,6 +2,7 @@ package Ab03;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Main {
@@ -17,13 +18,29 @@ public class Main {
 
         ArrayList<Integer> list = new ArrayList<Integer>();
         list.add(1);
-        list.add(6);
-
-
+        list.add(2);
         System.out.println("Add test");
         ringpuffer.add(1);
         ringpuffer.add(2);
         ringpuffer.add(3);
+        ringpuffer.add(4);
+        ringpuffer.forEach(t -> System.out.println(t));
+        System.out.println("----");
+        ringpuffer.remove();
+        ringpuffer.forEach(t -> System.out.println(t));
+
+
+/*
+        try {
+            ringpuffer.remove();
+        } catch (NoSuchElementException e) {
+            System.out.println("No such Element!");
+        }
+
+        ringpuffer.add(1);
+        ringpuffer.add(2);
+        ringpuffer.add(3);
+        ringpuffer.add(4);
         ringpuffer.forEach(t -> System.out.println(t));
 
         System.out.println("____");
@@ -53,7 +70,7 @@ public class Main {
 
         System.out.println("____");
         System.out.println("contains test");
-        Integer i = 6;
+        Integer i = 4;
         System.out.println(ringpuffer.contains(i));
 
         System.out.println("____");
@@ -75,9 +92,7 @@ public class Main {
         System.out.println("____");
         System.out.println("clear test");
         ringpuffer.clear();
-
-        //offer poll element peek
-
+*/
     }
 }
 
