@@ -30,6 +30,24 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
     }
 
     @Override
+    public boolean add(T t) {
+        if (size == capacity && !discarding) aenderung();
+        if (size < capacity && !discarding) {
+            elements.add(writePos, t);
+            writePos=position(writePos);
+            size++;
+            return true;
+        }
+        else if (size >= capacity && discarding) {
+            elements.set(writePos, t);
+            writePos=position(writePos);
+            size++;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean contains(Object o) {
         boolean contain = false;
         for (T current : this) {
@@ -56,7 +74,7 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
             public T next() {
                 if (readPos < size) {
                     T temp = elements.get(readPos);
-                    readPos = incrementPos(readPos);
+                    readPos = position(readPos);
                     pointer++;
                     return temp;
                 }
@@ -81,31 +99,13 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         return a;
     }
 
-    @Override
-    public boolean add(T t) {
-        if (size == capacity && discarding == false) aenderung();
-        if (size < capacity && discarding == false) {
-            elements.add(writePos, t);
-            writePos=incrementPos(writePos);
-            size++;
-            return true;
-        }
-        else if (discarding) {
-            elements.set(writePos, t);
-            size++;
-            writePos=incrementPos(writePos);
-            return true;
-        }
 
-        return false;
-    }
 
     @Override
     public boolean remove(Object o) throws NoSuchElementException {
         if (size == 0) throw new NoSuchElementException();
         else {
-            T temp = elements.get(readPos);
-            readPos = incrementPos(readPos);
+            readPos = position(readPos);
             size--;
             return true;
         }
@@ -129,14 +129,14 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
             if (size == capacity && discarding == false) aenderung();
             if (size < capacity && discarding == false) {
                 elements.add(writePos, current);
-                writePos=incrementPos(writePos);
                 size++;
+                writePos=position(writePos);
                 return true;
             }
             else if (elements.size() > writePos) {
                 elements.set(writePos, current);
                 size++;
-                writePos=incrementPos(writePos);
+                writePos=position(writePos);
                 return true;
             }
 
@@ -196,13 +196,13 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == capacity && discarding == false) aenderung();
         if (size < capacity && discarding == false) {
             elements.add(writePos, t);
-            writePos=incrementPos(writePos);
+            writePos=position(writePos);
             size++;
             return true;
         } else if (elements.size() > writePos) {
             elements.set(writePos, t);
             size++;
-            writePos=incrementPos(writePos);
+            writePos=position(writePos);
             return true;
         }
 
@@ -214,32 +214,18 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == 0) throw new NoSuchElementException();
         else {
             T temp = elements.get(readPos);
-            readPos = incrementPos(readPos);
-            size--;
+            readPos = position(readPos);
+            this.size--;
             return temp;
         }
-       /*
-    Retrieves and removes the head of this queue. This method differs from poll only in
-    that it throws an exception if this queue is empty.
-    Returns:
-    the head of this queue
-    Throws:
-    NoSuchElementException - if this queue is empty
-        */
     }
 
     @Override
     public T poll() {
-        /*
-        E poll()
-        Retrieves and removes the head of this queue, or returns null if this queue is empty.
-        Returns:
-        the head of this queue, or null if this queue is empty
-         */
         if (size == 0) return null;
         else {
             T head = elements.get(readPos);
-            readPos = incrementPos(readPos);
+            readPos = position(readPos);
             size--;
             return head;
         }
@@ -250,7 +236,7 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == 0) throw new NoSuchElementException();
         else {
             T head = elements.get(readPos);
-            readPos = incrementPos(readPos); //wird ja trotzdem ausgelesen
+            readPos = position(readPos); //wird ja trotzdem ausgelesen
             size--;
             return head;
         }
@@ -268,7 +254,7 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == 0) return null;
         else {
             T head = elements.get(readPos);
-            readPos = incrementPos(readPos); //wird ja trotzdem ausgelesen
+            readPos = position(readPos); //wird ja trotzdem ausgelesen
             size--;
             return head;
         }
@@ -306,8 +292,8 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         }
     }
 
-    private int incrementPos(int pos) {
-        return (pos+1) % this.capacity;
+    private int position(int pos) {
+        return (pos+1) % capacity;
     }
 
 }
