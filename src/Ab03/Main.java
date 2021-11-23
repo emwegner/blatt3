@@ -17,43 +17,40 @@ public class Main {
         Ringpuffer<Integer> ringpuffer = new Ringpuffer(capacity);
 
         ArrayList<Integer> list = new ArrayList<Integer>();
-        list.add(1);
-        list.add(2);
+        list.add(5);
+        list.add(4);
 
         System.out.println("Add test");
         ringpuffer.add(1);
         ringpuffer.add(2);
         ringpuffer.add(3);
         ringpuffer.add(4);
-        ringpuffer.forEach(t -> System.out.println(t));
-        System.out.println("----");
-        ringpuffer.remove();
-        ringpuffer.forEach(t -> System.out.println(t));
+        ringpuffer.add(5);
+        for(int i : ringpuffer) System.out.println(i);
+        System.out.println("____");
+        System.out.println("empty test");
+        System.out.println(ringpuffer.isEmpty());
 
+        System.out.println("____");
+        System.out.println("contains test für 4");
+        Integer i = 4;
+        System.out.println(ringpuffer.contains(i));
 
-/*
-        try {
-            ringpuffer.remove();
-        } catch (NoSuchElementException e) {
-            System.out.println("No such Element!");
-        }
+        System.out.println("____");
+        System.out.println("containsAll test, liste enthält 4,5");
+        System.out.println(ringpuffer.containsAll(list));
 
-        ringpuffer.add(1);
-        ringpuffer.add(2);
-        ringpuffer.add(3);
-        ringpuffer.add(4);
-        ringpuffer.forEach(t -> System.out.println(t));
 
         System.out.println("____");
         System.out.println("Remove test");
         ringpuffer.remove();
-        ringpuffer.forEach(t -> System.out.println(t));
+        for(int o : ringpuffer) System.out.println(o);
 
         System.out.println("____");
         System.out.println("Offer test");
         ringpuffer.offer(4);
         ringpuffer.offer(5);
-        ringpuffer.forEach(t -> System.out.println(t));
+        for(int p : ringpuffer) System.out.println(p);
 
         System.out.println("____");
         System.out.println("to Array test");
@@ -65,35 +62,31 @@ public class Main {
         System.out.println("size test");
         System.out.println(ringpuffer.size());
 
-        System.out.println("____");
-        System.out.println("empty test");
-        System.out.println(ringpuffer.isEmpty());
-
-        System.out.println("____");
-        System.out.println("contains test");
-        Integer i = 4;
-        System.out.println(ringpuffer.contains(i));
-
-        System.out.println("____");
-        System.out.println("containsAll test");
-        System.out.println(ringpuffer.containsAll(list));
-
-        System.out.println("____");
-        System.out.println("addAll test");
-        ringpuffer.addAll(list);
 
         System.out.println("____");
         System.out.println("removeAll test");
         ringpuffer.removeAll(list);
+        for(int l : ringpuffer) System.out.println(l);
+
+
+        System.out.println("____");
+        System.out.println("addAll test");
+        ringpuffer.addAll(list);
+        for(int k : ringpuffer) System.out.println(k);
+
 
         System.out.println("____");
         System.out.println("RetainAll test");
         ringpuffer.retainAll(list);
 
         System.out.println("____");
-        System.out.println("clear test");
-        ringpuffer.clear();
-*/
+        System.out.println("removeAll test");
+        ringpuffer.removeAll(list);
+        for(int m : ringpuffer) System.out.println(m);
+
+
     }
-}
+
+
+    }
 

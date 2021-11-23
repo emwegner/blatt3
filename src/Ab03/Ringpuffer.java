@@ -34,14 +34,13 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == capacity && !discarding) aenderung();
         if (size < capacity && !discarding) {
             elements.add(writePos, t);
-            writePos=position(writePos);
+            if (discarding) writePos = (writePos + 1) % capacity;
+            else writePos++;
             size++;
             return true;
-        }
-        else if (size >= capacity && discarding) {
+        } else if (size == capacity && discarding) {
             elements.set(writePos, t);
-            writePos=position(writePos);
-            size++;
+            writePos++;
             return true;
         }
         return false;
@@ -51,7 +50,7 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
     public boolean contains(Object o) {
         boolean contain = false;
         for (T current : this) {
-            if (current == o) {
+            if (current== o) {
                 contain = true;
                 break;
             }
@@ -62,7 +61,6 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
-
             private int pointer = 0;
 
             @Override
@@ -74,7 +72,9 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
             public T next() {
                 if (readPos < size) {
                     T temp = elements.get(readPos);
-                    readPos = position(readPos);
+                    if (discarding) readPos = (pointer + 1) % capacity;
+                    else readPos++;
+                    ;
                     pointer++;
                     return temp;
                 }
@@ -100,12 +100,11 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
     }
 
 
-
     @Override
     public boolean remove(Object o) throws NoSuchElementException {
         if (size == 0) throw new NoSuchElementException();
         else {
-            readPos = position(readPos);
+            readPos = (readPos + 1) % capacity;
             size--;
             return true;
         }
@@ -126,21 +125,21 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
     @Override
     public boolean addAll(Collection<? extends T> c) {
         for (T current : c) {
-            if (size == capacity && discarding == false) aenderung();
-            if (size < capacity && discarding == false) {
+            if (size == capacity && !discarding) aenderung();
+            if (size < capacity && !discarding) {
                 elements.add(writePos, current);
+                if (discarding) writePos = (writePos + 1) % capacity;
+                else writePos++;
+                ;
                 size++;
-                writePos=position(writePos);
                 return true;
-            }
-            else if (elements.size() > writePos) {
+            } else if (size == capacity && discarding) {
                 elements.set(writePos, current);
-                size++;
-                writePos=position(writePos);
+                writePos++;
                 return true;
             }
 
-            }
+        }
         return false;
     }
 
@@ -193,19 +192,19 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
     NullPointerException - if the specified element is null and this queue does not permit null elements
     IllegalArgumentException - if some property of this element prevents it from being added to this queue
          */
-        if (size == capacity && discarding == false) aenderung();
-        if (size < capacity && discarding == false) {
+        if (size == capacity && !discarding) aenderung();
+        if (size < capacity && !discarding) {
             elements.add(writePos, t);
-            writePos=position(writePos);
+            if (discarding) writePos = (writePos + 1) % capacity;
+            else writePos++;
+            ;
             size++;
             return true;
-        } else if (elements.size() > writePos) {
+        } else if (size == capacity && discarding) {
             elements.set(writePos, t);
-            size++;
-            writePos=position(writePos);
+            writePos++;
             return true;
         }
-
         return false;
     }
 
@@ -214,7 +213,8 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == 0) throw new NoSuchElementException();
         else {
             T temp = elements.get(readPos);
-            readPos = position(readPos);
+            readPos = (readPos + 1) % capacity;
+            ;
             this.size--;
             return temp;
         }
@@ -225,8 +225,9 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == 0) return null;
         else {
             T head = elements.get(readPos);
-            readPos = position(readPos);
+            readPos = (readPos + 1) % capacity;
             size--;
+            ;
             return head;
         }
     }
@@ -236,7 +237,7 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == 0) throw new NoSuchElementException();
         else {
             T head = elements.get(readPos);
-            readPos = position(readPos); //wird ja trotzdem ausgelesen
+            readPos = (readPos + 1) % capacity;
             size--;
             return head;
         }
@@ -254,7 +255,8 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         if (size == 0) return null;
         else {
             T head = elements.get(readPos);
-            readPos = position(readPos); //wird ja trotzdem ausgelesen
+            readPos = (readPos + 1) % capacity;
+            //wird ja trotzdem ausgelesen
             size--;
             return head;
         }
@@ -291,9 +293,6 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
                 break;
         }
     }
-
-    private int position(int pos) {
-     return (pos+1) % capacity;
-    }
-
 }
+
+
