@@ -214,7 +214,6 @@ public class Ringpuffer<T> implements Queue<T>, Serializable, Cloneable {
         else {
             T temp = elements.get(readPos);
             readPos = (readPos + 1) % capacity;
-            ;
             this.size--;
             return temp;
         }
