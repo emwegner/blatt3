@@ -14,7 +14,7 @@ public class Main {
         System.out.println("Ringpuffer");
         System.out.print("Geben sie die Kapazität des Ringpuffers ein: ");
         capacity = scan.nextInt();
-        Ringpuffer<Integer> ringpuffer = new Ringpuffer(capacity);
+        Ringpuffer<Integer> ringpuffer = new Ringpuffer(capacity,true,true);
 
         ArrayList<Integer> list = new ArrayList<Integer>();
         list.add(5);
@@ -75,14 +75,6 @@ public class Main {
         for(int k : ringpuffer) System.out.println(k);
 
 
-        System.out.println("____");
-        System.out.println("RetainAll test");
-        ringpuffer.retainAll(list);
-
-        System.out.println("____");
-        System.out.println("removeAll test");
-        ringpuffer.removeAll(list);
-        for(int m : ringpuffer) System.out.println(m);
 
 
     }
